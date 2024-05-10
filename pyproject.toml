@@ -1,0 +1,26 @@
+[project]
+name = "empower_functions"
+version = "0.1.3"
+authors = [
+  { name="empower.dev", email="yulong@empower.dev" }
+]
+description = "The empower_functions package provides a set of utility functions to run the empower-functions model"
+requires-python = ">=3.8"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+    "jinja2",
+    "llama-cpp-python[server]",
+    "pydantic",    
+]
+readme = "./empower_functions/README.md"
+
+[project.urls]
+Homepage = "https://empower.dev"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
