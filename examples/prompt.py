@@ -4,7 +4,7 @@ import json
 
 device = "cuda"
 
-model_path = "empower-dev/empower-functions-small"
+model_path = "empower-dev/llama3-empower-functions-small"
 
 model = AutoModelForCausalLM.from_pretrained(model_path, device_map="auto")
 tokenizer = AutoTokenizer.from_pretrained(model_path)
