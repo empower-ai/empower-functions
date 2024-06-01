@@ -1,9 +1,24 @@
+from __future__ import annotations
+
 import llama_cpp
 from llama_cpp.server.model import LlamaProxy
 from llama_cpp.server.settings import ModelSettings
 from llama_cpp.server.__main__ import main
+
 from empower_functions.chat_handler import EmpowerFunctionsCompletionHandler
+import json
+from typing import Optional, Union, Dict
+import llama_cpp
+from llama_cpp.server.model import (
+    LlamaProxy,
+)
+from llama_cpp.server.settings import (
+    ModelSettings,
+)
+from empower_functions.monkey_patch.app import patch_app
+
 # Monkey pacthing the LlamaProxy class
+
 
 def load_llama_from_model_settings(settings: ModelSettings) -> llama_cpp.Llama:
     chat_handler = None
@@ -206,7 +221,8 @@ def load_llama_from_model_settings(settings: ModelSettings) -> llama_cpp.Llama:
         if settings.cache_type == "disk":
             if settings.verbose:
                 print(f"Using disk cache with size {settings.cache_size}")
-            cache = llama_cpp.LlamaDiskCache(capacity_bytes=settings.cache_size)
+            cache = llama_cpp.LlamaDiskCache(
+                capacity_bytes=settings.cache_size)
         else:
             if settings.verbose:
                 print(f"Using ram cache with size {settings.cache_size}")
@@ -214,7 +230,11 @@ def load_llama_from_model_settings(settings: ModelSettings) -> llama_cpp.Llama:
         _model.set_cache(cache)
     return _model
 
-LlamaProxy.load_llama_from_model_settings = staticmethod(load_llama_from_model_settings)
+
+LlamaProxy.load_llama_from_model_settings = staticmethod(
+    load_llama_from_model_settings)
 
 if __name__ == "__main__":
+    patch_app()
+
     main()

@@ -1,6 +1,17 @@
 import json
 
-from typing import Any, Dict, Iterator, List, Literal, Optional, Tuple, Union, Protocol, cast
+from typing import (
+    Any,
+    Dict,
+    Iterator,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Union,
+    Protocol,
+    cast,
+)
 
 import jinja2
 from jinja2.sandbox import ImmutableSandboxedEnvironment
@@ -9,10 +20,10 @@ import llama_cpp.llama as llama
 import llama_cpp.llama_types as llama_types
 from llama_cpp.llama_chat_format import LlamaChatCompletionHandler
 from empower_functions.prompt import prompt_messages
+import traceback
+
 
 class EmpowerFunctionsCompletionHandler(LlamaChatCompletionHandler):
-    SYSTEM_INSTRUCTION = "In this environment you have access to a set of functions defined in the JSON format you can use to address user's requests, use them if needed."
-
     def __call__(
         self,
         llama: llama.Llama,
@@ -28,7 +39,9 @@ class EmpowerFunctionsCompletionHandler(LlamaChatCompletionHandler):
         typical_p: float = 1.0,
         stream: bool = False,
         stop: Optional[Union[str, List[str]]] = [],
-        response_format: Optional[llama_types.ChatCompletionRequestResponseFormat] = None,
+        response_format: Optional[
+            llama_types.ChatCompletionRequestResponseFormat
+        ] = None,
         max_tokens: Optional[int] = None,
         presence_penalty: float = 0.0,
         frequency_penalty: float = 0.0,
@@ -46,7 +59,7 @@ class EmpowerFunctionsCompletionHandler(LlamaChatCompletionHandler):
     ) -> Union[
         llama_types.CreateChatCompletionResponse,
         Iterator[llama_types.CreateChatCompletionStreamResponse],
-    ]:        
+    ]:
         template = "{% set loop_messages = messages %}{% for message in loop_messages %}{% set content = '<|start_header_id|>' + message['role'] + '<|end_header_id|>\n\n'+ message['content'] | trim + '<|eot_id|>' %}{% if loop.index0 == 0 %}{% set content = '<|begin_of_text|>' + content %}{% endif %}{{ content }}{% endfor %}{% if add_generation_prompt %}{{ '<|start_header_id|>assistant<|end_header_id|>\n\n' }}{% endif %}"
         template_renderer = ImmutableSandboxedEnvironment(
             autoescape=False,
@@ -72,48 +85,67 @@ class EmpowerFunctionsCompletionHandler(LlamaChatCompletionHandler):
         assert tool_choice != "any"
 
         if functions is None:
-            functions = [ tool.get('function') for tool in tools ]
-        stop = [stop, "<|eot_id|>"] if isinstance(stop, str) else stop + ["<|eot_id|>"] if stop else ["<|eot_id|>"]
+            functions = [tool.get("function") for tool in tools]
+        stop = (
+            [stop, "<|eot_id|>"]
+            if isinstance(stop, str)
+            else stop + ["<|eot_id|>"] if stop else ["<|eot_id|>"]
+        )
 
         if tool_choice == "none":
             functions = []
-        prompted_messages = prompt_messages(messages, functions)
-        prompt = template_renderer.render(messages=prompted_messages, add_generation_prompt=True)
+
+        include_thinking = False
+        if "include_thinking" in kwargs:
+            include_thinking = kwargs["include_thinking"]
+        prompted_messages = prompt_messages(
+            messages, functions, include_thinking=include_thinking
+        )
+        prompt = template_renderer.render(
+            messages=prompted_messages, add_generation_prompt=True
+        )
 
         # Case 1: No tool choice by user
         generated = llama.create_completion(
-                prompt=prompt,
-                temperature=temperature,
-                top_p=top_p,
-                top_k=top_k,
-                min_p=min_p,
-                typical_p=typical_p,
-                stream=stream,
-                stop=stop,
-                max_tokens=max_tokens,
-                presence_penalty=presence_penalty,
-                frequency_penalty=frequency_penalty,
-                repeat_penalty=repeat_penalty,
-                tfs_z=tfs_z,
-                mirostat_mode=mirostat_mode,
-                mirostat_tau=mirostat_tau,
-                mirostat_eta=mirostat_eta,
-                model=model,
-                logits_processor=logits_processor,
-                grammar=grammar,
-                logprobs=top_logprobs if logprobs else None,
-            )
-        generated_text = generated['choices'][0]['text']
-        if generated_text.startswith('<f>'):
-            json_object = json.loads(generated_text[3:])
+            prompt=prompt,
+            temperature=temperature,
+            top_p=top_p,
+            top_k=top_k,
+            min_p=min_p,
+            typical_p=typical_p,
+            stream=stream,
+            stop=stop,
+            max_tokens=max_tokens,
+            presence_penalty=presence_penalty,
+            frequency_penalty=frequency_penalty,
+            repeat_penalty=repeat_penalty,
+            tfs_z=tfs_z,
+            mirostat_mode=mirostat_mode,
+            mirostat_tau=mirostat_tau,
+            mirostat_eta=mirostat_eta,
+            model=model,
+            logits_processor=logits_processor,
+            grammar=grammar,
+            logprobs=top_logprobs if logprobs else None,
+        )
+        thinking = None
+        content = None
+
+        (content, thinking) = _separate_thinking_if_present(
+            generated["choices"][0]["text"]
+        )
+        if content.startswith("<f>"):
+            generated["choices"][0]["text"] = content
             return _convert_completion_to_chat_function(
-                completion_or_chunks=generated
+                completion_or_chunks=generated,
+                thinking=thinking,
             )
-        elif generated_text.startswith('<c>'):
-            generated['choices'][0]['text'] = generated_text[3:]
+        elif content.startswith("<c>"):
+            generated["choices"][0]["text"] = thinking + content[3:]
             return _convert_completion_to_chat(generated, stream=stream)
 
         return _convert_completion_to_chat(generated, stream=stream)
+
 
 def _convert_completion_to_chat(
     completion_or_chunks: Union[
@@ -125,11 +157,13 @@ def _convert_completion_to_chat(
     llama_types.CreateChatCompletionResponse, Iterator[llama_types.ChatCompletionChunk]
 ]:
     if stream:
-        chunks: Iterator[llama_types.CreateCompletionStreamResponse] = completion_or_chunks  # type: ignore
+        # type: ignore
+        chunks: Iterator[llama_types.CreateCompletionStreamResponse] = completion_or_chunks
         return _convert_text_completion_chunks_to_chat(chunks)
     else:
         completion: llama_types.Completion = completion_or_chunks  # type: ignore
         return _convert_text_completion_to_chat(completion)
+
 
 def _maybe_json_dumps(value: Any) -> str:
     if isinstance(value, str):
@@ -139,6 +173,7 @@ def _maybe_json_dumps(value: Any) -> str:
 
 def _convert_completion_to_chat_function(
     completion_or_chunks: llama_types.CreateCompletionResponse,
+    thinking: Optional[str] = None,
 ):
     completion: llama_types.CreateCompletionResponse = completion_or_chunks  # type: ignore
     assert "usage" in completion
@@ -146,23 +181,26 @@ def _convert_completion_to_chat_function(
     # TODO: Fix for legacy function calls
     json_object = json.loads(completion["choices"][0]["text"][3:])
 
-    print(json.dumps(json_object, indent=2))
-
     tool_calls = [
         {
-            "id": "call_" + "_0_" + tool['name'] + "_" + completion["id"] + "_" + str(i),
+            "id": "call_"
+            + "_0_"
+            + tool["name"]
+            + "_"
+            + completion["id"]
+            + "_"
+            + str(i),
             "type": "function",
             "function": {
-                "name": tool['name'],
-                "arguments": _maybe_json_dumps(tool['arguments']),
+                "name": tool["name"],
+                "arguments": _maybe_json_dumps(tool["arguments"]),
             },
         }
-
         for (i, tool) in enumerate(json_object)
     ]
-    
+
     json_object = json.loads(completion["choices"][0]["text"][3:])
-    
+
     chat_completion: llama_types.CreateChatCompletionResponse = {
         "id": "chat" + completion["id"],
         "object": "chat.completion",
@@ -173,8 +211,8 @@ def _convert_completion_to_chat_function(
                 "index": 0,
                 "message": {
                     "role": "assistant",
-                    "content": None,
-                    "tool_calls": tool_calls
+                    "content": thinking,
+                    "tool_calls": tool_calls,
                 },
                 "logprobs": completion["choices"][0]["logprobs"],
                 "finish_reason": "tool_calls",
@@ -183,6 +221,7 @@ def _convert_completion_to_chat_function(
         "usage": completion["usage"],
     }
     return chat_completion
+
 
 def _convert_text_completion_chunks_to_chat(
     chunks: Iterator[llama_types.CreateCompletionStreamResponse],
@@ -237,11 +276,13 @@ def _convert_completion_to_chat(
     llama_types.CreateChatCompletionResponse, Iterator[llama_types.ChatCompletionChunk]
 ]:
     if stream:
-        chunks: Iterator[llama_types.CreateCompletionStreamResponse] = completion_or_chunks  # type: ignore
+        # type: ignore
+        chunks: Iterator[llama_types.CreateCompletionStreamResponse] = completion_or_chunks
         return _convert_text_completion_chunks_to_chat(chunks)
     else:
         completion: llama_types.Completion = completion_or_chunks  # type: ignore
         return _convert_text_completion_to_chat(completion)
+
 
 def _convert_text_completion_to_chat(
     completion: llama_types.Completion,
@@ -308,3 +349,16 @@ def _convert_text_completion_chunks_to_chat(
                 }
             ],
         }
+
+
+def _separate_thinking_if_present(text):
+    tag = "</thinking>"
+    tag_position = text.find(tag)
+
+    if tag_position != -1:
+        # Split the string into two parts
+        part1 = text[: tag_position + len(tag)]
+        part2 = text[tag_position + len(tag):]
+        return part2, part1
+    else:
+        return text, None

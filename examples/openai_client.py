@@ -2,8 +2,8 @@ import openai
 import json
 
 client = openai.OpenAI(
-    base_url = "http://localhost:8000/v1",
-    api_key = "YOUR_API_KEY"
+    base_url="http://localhost:8000/v1",
+    api_key="YOUR_API_KEY"
 )
 
 messages = [
@@ -35,7 +35,21 @@ chat_completion = client.chat.completions.create(
     messages=messages,
     tools=tools,
     temperature=0,
-    tool_choice="auto"
+    tool_choice="auto",
+)
+
+print(chat_completion)
+
+# Query again with thinking enabled
+chat_completion = client.chat.completions.create(
+    model="does_not_matter",
+    messages=messages,
+    tools=tools,
+    temperature=0,
+    tool_choice="auto",
+    extra_body={
+        "include_thinking": True
+    }
 )
 
 print(chat_completion)

@@ -124,14 +124,21 @@ def _check_and_merge_messages(messages):
     return updated_messages
 
 
-def prompt_messages(messages, functions_def):
+def prompt_messages(messages, functions_def, include_thinking=False):
     if not functions_def:
         functions_def = []
+
+    if len(functions_def) == 0 and include_thinking:
+        raise Exception(
+            'Currently thinking mode is only supported with tools. Please provide functions_def to enable thinking mode.')
 
     _check_functions_def(functions_def)
     messages = _check_and_merge_messages(messages)
 
     system_instruction = SYSTEM_INSTRUCTION
+    if include_thinking:
+        system_instruction += "\nMake sure to include your thinking inside < thinking > </thinking > before response."
+
     first_user_message = messages[0]
     starting_index = 1
     if messages[0]['role'] == 'system':
