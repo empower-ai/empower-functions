@@ -77,7 +77,7 @@ def print_response(chat_completion):
 
 
 client = openai.OpenAI(
-    base_url="http://localhost:8000/v1",
+    base_url="https://app.empower.dev/api/v1", # Replace with localhost if running in Llama.cpp server
     api_key="YOUR_API_KEY"
 )
 
@@ -102,7 +102,7 @@ tools = [
 ]
 
 chat_completion = client.chat.completions.create(
-    model="does_not_matter",
+    model="empower-functions",
     messages=[
         {"role": "user", "content": "What's the weather in San Francisco and Tokyo?"}
     ],
@@ -119,7 +119,7 @@ print()
 
 
 chat_completion = client.chat.completions.create(
-    model="does_not_matter",
+    model="empower-functions",
     messages=[
         {"role": "user", "content": "Can you help me order a pizza"}
     ],
@@ -133,6 +133,22 @@ chat_completion = client.chat.completions.create(
 
 print_response(chat_completion)
 
+```
+
+Output:
+
+```
+Response:                                                                                                                                                                                                                                                                       [279/279]
+Thinking: <thinking>The user asked for the weather in both San Francisco and Tokyo. The relevant tool is "get_current_weather," which requires the "location" parameter. Both required locations are directly provided by the user, so the tool call is made with the arguments "San Fran
+cisco, CA" and "Tokyo."</thinking>
+Tool calls:
+name: get_current_weather arguments: {"location": "San Francisco, CA"}
+name: get_current_weather arguments: {"location": "Tokyo"}
+
+Response:
+Thinking: <thinking>The user's request to order a pizza cannot be fulfilled with the available tool, which is designed to provide current weather information. The response explains the limitation of the assistant's capabilities and redirects the user to ask for something within it
+s scope, such as providing the current weather. This ensures clarity about the assistant's functions and sets appropriate expectations for the user.</thinking>
+Content: I'm sorry, but I don't have the capability to perform external tasks like ordering a pizza. My current function allows me to provide information about the current weather in a specified location. Is there anything else you would like to know within my capabilities?
 ```
 
 #### Prompt the model directly:
