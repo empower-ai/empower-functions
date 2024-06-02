@@ -75,4 +75,4 @@ There're two types of assistant messages:
 
 ## Using empower-functions Library
 
-To make it easier, to use, we have encapusilate the prompting logic into our `empower-functions` pip package. See the example at [prompt.py](/examples/prompt.py) for details.
+To make it easier, to use, we have encapsulate the prompting logic into our `empower-functions` pip package. See the example at [prompt.py](/examples/prompt.py) for details.

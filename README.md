@@ -8,6 +8,10 @@ Empower Functions is a family of LLMs(large language models) that offer GPT-4 le
 
 [Live Demo](https://app.empower.dev/chat-demo) • [Huggingface Repo](https://huggingface.co/collections/empower-dev/empower-functions-663e9a22df93b46804df75a8) • [Website](https://empower.dev) • [Discord](https://discord.gg/PVaggZ3z6r)
 
+## Update
+
+**New CoT (Chain of Thought) Mode:** Curious about the thought process behind the models' responses? Empower functions models now support built-in CoT mode, which includes their thought process in the response! See this [doc](/docs/inference/built-in-cot.md) for details.
+
 ## What is real world "tool using" use cases?
 
 "tool using" refers to the ability of LLMs to interact with external APIs by recognizing when a function needs to be called and then generating JSON containing the necessary arguments based on user inputs. This capability is essential for building conversational agents and applications that convert natural language into API calls, facilitating tasks such as weather inquiries, data extraction, and interactions with knowledge bases.
@@ -19,11 +23,11 @@ For example, below is a screenshot demonstrating how the model is used in a medi
 
 ## Family of Models
 
-| Model                           | Specs                                                                                             | Links                                                                                                                           | Notes                                |
-| ------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| llama3-empower-functions-small  | 8k context, based on [Llama3 8B](https://huggingface.co/meta-llama/Meta-Llama-3-8B)               | [model](https://huggingface.co/empower-dev/llama3-empower-functions-small), [GGUF](https://huggingface.co/empower-dev/llama3-empower-functions-small-gguf)   | Most cost-effective, locally runnable |
-| empower-functions-medium        | 32k context, based on [Mixtral 8x7B](https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1) | [model](https://huggingface.co/empower-dev/empower-functions-medium)                                                             | Balance in accuracy and cost         |
-| llama3-empower-functions-large  | 8k context, based on [Llama3 70B](https://huggingface.co/meta-llama/Meta-Llama-3-70B)             | [model](https://huggingface.co/empower-dev/llama3-empower-functions-large)                                                      | Best accuracy                        |
+| Model                          | Specs                                                                                             | Links                                                                                                                                                      | Notes                                 |
+| ------------------------------ | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| llama3-empower-functions-small | 8k context, based on [Llama3 8B](https://huggingface.co/meta-llama/Meta-Llama-3-8B)               | [model](https://huggingface.co/empower-dev/llama3-empower-functions-small), [GGUF](https://huggingface.co/empower-dev/llama3-empower-functions-small-gguf) | Most cost-effective, locally runnable |
+| empower-functions-medium       | 32k context, based on [Mixtral 8x7B](https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1) | [model](https://huggingface.co/empower-dev/empower-functions-medium)                                                                                       | Balance in accuracy and cost          |
+| llama3-empower-functions-large | 8k context, based on [Llama3 70B](https://huggingface.co/meta-llama/Meta-Llama-3-70B)             | [model](https://huggingface.co/empower-dev/llama3-empower-functions-large)                                                                                 | Best accuracy                         |
 
 #### Hardware Requirement
 

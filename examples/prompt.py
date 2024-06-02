@@ -67,7 +67,8 @@ messages = [
 
 ]
 
-messages = prompt_messages(messages, functions)
+# Enable CoT(Chain of Thought) by toggling include_thinking=True
+messages = prompt_messages(messages, functions, include_thinking=False)
 model_inputs = tokenizer.apply_chat_template(
     messages, return_tensors="pt").to(model.device)
 
