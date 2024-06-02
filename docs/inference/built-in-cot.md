@@ -1,41 +1,36 @@
 # Built in Chain-of-Thought
 
-[Chain-of-thought (CoT)](https://www.promptingguide.ai/techniques/cot) enables complex reasoning capabilities through intermediate reasoning steps.
+Chain-of-Thought (CoT) is a prompting technique that enhances complex reasoning in AI models by breaking down the reasoning process into intermediate steps. This method allows models to handle tasks that require multi-step thinking by explicitly generating and following a thought process before arriving at a final response. By doing so, CoT improves the accuracy and transparency of the model's outputs, because of the nature of casual inference of LLMs.
+In function-calling use cases, CoT is typically utilized to analyze the intent of the user input to determine whether it’s appropriate to trigger functions or continue the conversation as usual. If it’s suitable to trigger functions, the model identifies the most appropriate function(s) to invoke. It checks if any required parameters are missing and cannot be inferred from the conversation context. Based on this analysis, the model triggers the functions or asks the user for follow-up information.
 
-Empower functions models have been trained with built-in CoT that can be enabled with a special prompt. When CoT is enabled, Empower functions models will respond with their thought process within <thinking></thinking> tags before the actual response. Due to the nature of the causal inference process, including the thought process before the actual response improves the accuracy of the response. Additionally, in some specific use cases, displaying the thought process to end-users enhances transparency.
+Below is a quick example of prompt used for the model to do CoT for function calling and a sample model response on the thought process:
 
-Below is an example of the thought process output by the model with CoT enabled:
-
-Function:
-
-```json
-{
-  "name": "get_current_weather",
-  "description": "Get the current weather",
-  "parameters": {
-    "type": "object",
-    "properties": {
-      "location": {
-        "type": "string",
-        "description": "The city and state, e.g., San Francisco, CA"
-      }
-    },
-    "required": ["location"]
-  }
-}
-```
-
-Prompt:
+**Prompt:**
 
 ```
-What's the weather in San Francisco?
+To respond to the user's request, use relevant tools if available. Follow these steps:
+Analyze the request to identify the appropriate tool to use.
+Review the required parameters for the selected tool.
+Determine if the user has provided all necessary parameters or if they can be inferred from the context. Carefully consider all provided information to support any inferred values.
+If all required parameters are present or can be reasonably inferred, proceed to call the tool.
+If any required parameter is missing, do not call the tool. Instead, ask the user for the missing information.
+Do not request additional details for optional parameters if they are not provided.
 ```
 
-Thinking:
+**Thinking response:**
 
 ```
-<thinking>The user asked for the weather in San Francisco. The relevant tool to use is "get_current_weather," which requires the "location" parameter. The user provided the location directly as "San Francisco," so all required parameters are present, leading to the tool call with the argument "location" set to "San Francisco."</thinking>
+The user asked for the weather in San Francisco. The relevant tool to use is "get_current_weather," which requires the "location" parameter. The user provided the location directly as "San Francisco," so all required parameters are present, leading to the tool call with the argument "location" set to "San Francisco."
 ```
+
+## Model Level Chain-of-Thought Support
+
+While it’s typical to implement CoT at the prompt level, this approach has two main drawbacks:
+
+- Performance: Additional instructions and tokens are needed to guide the CoT process, introducing overhead in terms of both cost and latency.
+- Reliability: Ensuring the model follows the correct format is challenging, especially for function calling, which involves a mix of JSON (function calls) and free text (thinking). This complexity makes streaming extremely difficult. There are tricks to mitigate this, such as [adding an additional "explanation" parameter to the function definition](https://pierce-lamb.medium.com/improving-gpt-4-function-calling-with-an-explanation-parameter-4fba06a4c6bb), but this has limitations. When the explanation is generated, the model has already decided to trigger functions and which exact function(s) to trigger, so the improvement in accuracy is limited.
+
+To address these drawbacks, we decided to enable CoT at the model level. Empower functions models have been trained with built-in CoT that can be enabled with a special prompt (less than 10 tokens in the internal system prompt). When CoT is enabled, Empower functions models will respond with their thought process within tags before the actual response (which will be a set of function calls or regular conversations). This approach provides the model with a full “thought process” before deciding whether to trigger any functions and which function(s) to trigger. We have fully supported streaming with CoT. Additionally, the model can function without CoT if the special prompt is not added.
 
 ## How to Use
 
