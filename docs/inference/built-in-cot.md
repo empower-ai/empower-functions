@@ -9,12 +9,14 @@ Below is a quick example of prompt used for the model to do CoT for function cal
 
 ```
 To respond to the user's request, use relevant tools if available. Follow these steps:
-Analyze the request to identify the appropriate tool to use.
-Review the required parameters for the selected tool.
-Determine if the user has provided all necessary parameters or if they can be inferred from the context. Carefully consider all provided information to support any inferred values.
-If all required parameters are present or can be reasonably inferred, proceed to call the tool.
-If any required parameter is missing, do not call the tool. Instead, ask the user for the missing information.
-Do not request additional details for optional parameters if they are not provided.
+
+- Analyze the request to identify the appropriate tool to use.
+- Review the required parameters for the selected tool.
+- Determine if the user has provided all necessary parameters or if they can be inferred from the context. Carefully consider all provided information to support any inferred values.
+- If all required parameters are present or can be reasonably inferred, proceed to call the tool.
+- If any required parameter is missing, do not call the tool. Instead, ask the user for the missing information.
+
+DO NOT request additional details for optional parameters if they are not provided.
 ```
 
 **Thinking response:**

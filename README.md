@@ -12,6 +12,8 @@ Empower Functions is a family of LLMs(large language models) that offer GPT-4 le
 
 **New CoT (Chain of Thought) Mode:** Curious about the thought process behind the models' responses? Empower functions models now support built-in CoT mode, which includes their thought process in the response! See this [doc](/docs/inference/built-in-cot.md) for details.
 
+![image](assets/demo_thinking_screenshot.png)
+
 ## What is real world "tool using" use cases?
 
 "tool using" refers to the ability of LLMs to interact with external APIs by recognizing when a function needs to be called and then generating JSON containing the necessary arguments based on user inputs. This capability is essential for building conversational agents and applications that convert natural language into API calls, facilitating tasks such as weather inquiries, data extraction, and interactions with knowledge bases.
