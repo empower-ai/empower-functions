@@ -1,9 +1,7 @@
 [project]
 name = "empower_functions"
-version = "0.1.4"
-authors = [
-  { name="empower.dev", email="yulong@empower.dev" }
-]
+version = "0.1.5"
+authors = [{ name = "empower.dev", email = "yulong@empower.dev" }]
 description = "The empower_functions package provides a set of utility functions to run the empower-functions model"
 requires-python = ">=3.8"
 classifiers = [
@@ -11,11 +9,7 @@ classifiers = [
   "License :: OSI Approved :: Apache Software License",
   "Operating System :: OS Independent",
 ]
-dependencies = [
-    "jinja2",
-    "llama-cpp-python[server]",
-    "pydantic",    
-]
+dependencies = ["jinja2", "llama-cpp-python[server]", "pydantic"]
 readme = "./empower_functions/README.md"
 
 [project.urls]

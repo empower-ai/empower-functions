@@ -6,7 +6,7 @@ long_description = (this_directory / "empower_functions/README.md").read_text()
 
 setup(
     name='empower_functions',  # This is the package name
-    version='0.1.4',
+    version='0.1.5',
     packages=find_packages(),  # This will find the `empower_functions` directory
     install_requires=[
         "jinja2",

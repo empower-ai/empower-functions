@@ -141,7 +141,8 @@ class EmpowerFunctionsCompletionHandler(LlamaChatCompletionHandler):
                 thinking=thinking,
             )
         elif content.startswith("<c>"):
-            generated["choices"][0]["text"] = thinking + content[3:]
+            generated["choices"][0]["text"] = thinking + \
+                content[3:] if thinking else content[3:]
             return _convert_completion_to_chat(generated, stream=stream)
 
         return _convert_completion_to_chat(generated, stream=stream)
