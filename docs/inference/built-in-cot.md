@@ -1,6 +1,6 @@
 # Built in Chain-of-Thought
 
-Chain-of-Thought (CoT) is a prompting technique that enhances complex reasoning in AI models by breaking down the reasoning process into intermediate steps. This method allows models to handle tasks that require multi-step thinking by explicitly generating and following a thought process before arriving at a final response. By doing so, CoT improves the accuracy and transparency of the model's outputs, because of the nature of casual inference of LLMs.
+Chain-of-Thought (CoT) is a prompting technique that enhances complex reasoning in AI models by breaking down the reasoning process into intermediate steps. This method allows models to handle tasks that require multi-step thinking by explicitly generating and following a thought process before arriving at a final response. By doing so, CoT improves the accuracy and transparency of the model's outputs, because of the nature of causal inference of LLMs.
 In function-calling use cases, CoT is typically utilized to analyze the intent of the user input to determine whether it’s appropriate to trigger functions or continue the conversation as usual. If it’s suitable to trigger functions, the model identifies the most appropriate function(s) to invoke. It checks if any required parameters are missing and cannot be inferred from the conversation context. Based on this analysis, the model triggers the functions or asks the user for follow-up information.
 
 Below is a quick example of prompt used for the model to do CoT for function calling and a sample model response on the thought process:
@@ -25,6 +25,10 @@ DO NOT request additional details for optional parameters if they are not provid
 The user asked for the weather in San Francisco. The relevant tool to use is "get_current_weather," which requires the "location" parameter. The user provided the location directly as "San Francisco," so all required parameters are present, leading to the tool call with the argument "location" set to "San Francisco."
 ```
 
+To give a more intuitive sense of this feature in production, we have CoT enabled in the [live demo](https://app.empower.dev/chat-demo), as shown in the screenshot below:
+
+![image](/assets/demo_thinking_screenshot.png)
+
 ## Model Level Chain-of-Thought Support
 
 While it’s typical to implement CoT at the prompt level, this approach has two main drawbacks:
@@ -38,7 +42,7 @@ To address these drawbacks, we decided to enable CoT at the model level. Empower
 
 #### Using API:
 
-The most straightforward way to use CoT mode is via the API. Both the Empower platform and the llama.cpp server support this feature and can toggle it at the request level with a parameter: `include_thinking`.
+The most straightforward way to use CoT mode is via the API. Both the Empower platform and the llama.cpp server supports this feature and can toggle it at the request level with a parameter: `include_thinking`.
 
 ```python
 import openai
