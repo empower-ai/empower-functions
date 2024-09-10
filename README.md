@@ -6,13 +6,14 @@
 
 Empower Functions is a family of LLMs(large language models) that offer GPT-4 level capabilities for real-world "tool using" use cases, with full compatibility support to be served as a drop-in replacement.
 
-[Live Demo](https://app.empower.dev/chat-demo) • [Huggingface Repo](https://huggingface.co/collections/empower-dev/empower-functions-663e9a22df93b46804df75a8) • [Website](https://empower.dev) • [Discord](https://discord.gg/PVaggZ3z6r)
+[Live Demo](https://app.empower.dev/chat-demo) • [Huggingface Repo](https://huggingface.co/collections/empower-dev/empower-functions-v11-66df72d78c1f7b80bda36f5f) • [Website](https://empower.dev) • [Discord](https://discord.gg/PVaggZ3z6r)
 
 ## Update
 
-**New CoT (Chain of Thought) Mode:** Curious about the thought process behind the models' responses? Empower functions models now support built-in CoT mode, which includes their thought process in the response! See this [doc](/docs/inference/built-in-cot.md) for details.
+**New Empower Functions v1.1** 
+We have just launched new [v1.1 of the Empower Functions family](https://huggingface.co/collections/empower-dev/empower-functions-v11-66df72d78c1f7b80bda36f5f). The updated v1.1 family has been fine-tuned based on Llama3.1, using an enhanced curated dataset. It has achieved state-of-the-art performance on the Berkeley Function Calling leader board:
 
-![image](assets/demo_thinking_screenshot.png)
+![image](assets/bfcl.png)
 
 ## What is real world "tool using" use cases?
 
@@ -27,16 +28,14 @@ For example, below is a screenshot demonstrating how the model is used in a medi
 
 | Model                          | Specs                                                                                             | Links                                                                                                                                                      | Notes                                 |
 | ------------------------------ | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| llama3-empower-functions-small | 8k context, based on [Llama3 8B](https://huggingface.co/meta-llama/Meta-Llama-3-8B)               | [model](https://huggingface.co/empower-dev/llama3-empower-functions-small), [GGUF](https://huggingface.co/empower-dev/llama3-empower-functions-small-gguf) | Most cost-effective, locally runnable |
-| empower-functions-medium       | 32k context, based on [Mixtral 8x7B](https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1) | [model](https://huggingface.co/empower-dev/empower-functions-medium)                                                                                       | Balance in accuracy and cost          |
-| llama3-empower-functions-large | 8k context, based on [Llama3 70B](https://huggingface.co/meta-llama/Meta-Llama-3-70B)             | [model](https://huggingface.co/empower-dev/llama3-empower-functions-large)                                                                                 | Best accuracy                         |
+| llama3-empower-functions-small | 128k context, based on [Llama3.1 8B](https://huggingface.co/meta-llama/Meta-Llama-3.1-8B)               | [model](https://huggingface.co/empower-dev/llama3-empower-functions-small-v1.1), [gguf](https://huggingface.co/empower-dev/llama3-empower-functions-small-gguf-v1.1) | Most cost-effective, locally runnable |                                                                                    | Balance in accuracy and cost          |
+| llama3-empower-functions-large | 128k context, based on [Llama3.1 70B](https://huggingface.co/meta-llama/Meta-Llama-3.1-70B)             | [model](https://huggingface.co/empower-dev/llama3-empower-functions-large-v1.1)                                                                                 | Best accuracy                         |
 
 #### Hardware Requirement
 
 We have tested and the family of models in following setup:
 
 - empower-functions-small: fp16 on 1xA100 40G, GGUF and 4bit GGUF on Macbook M2 Pro with 32G RAM, in minimal the 4bit GGUF version requires 7.56G RAM.
-- empower-functions-medium: fp16 on 2xA100 80G
 - empower-functions-large: fp16 on 4xA100 80G
 
 ## How to Use?
@@ -268,14 +267,6 @@ Finally, we are committed to continuously optimizing the model for better qualit
 
 ## Evaluation
 
-To comprehensively access response quality of the model, we benchmarked it across three datasets (all of the datasets can be found [here](https://huggingface.co/empower-dev)):
+We evaluate our models against the Berkeley Function Calling benchmark and both of hte 8B and 70B version have achieved the state of the art performance on its size:
 
-- Single Turn Dataset: The model is evaluated for its ability to execute a precise function call, assessing both the accuracy of the selected function and the arguments.
-
-- Parallel Call Dataset: In this scenario, the model demonstrates its capacity to handle multiple (2-6) function calls within a single message, a feature not supported by Fireworks and Anyscale.
-
-- Multi-Turn Dataset: Designed to simulate a complex real-world environment, such as a healthcare appointment booking system, the model navigates between natural conversation, initiating function calls, asking clarifying questions, and, when necessary, transferring to customer service. The assessment focuses on the accuracy of intent classification and the correctness of function calls.
-
-In the benchmark, we compared the model against other function-calling models including GPT-4, GPT-3.5, Firefunctions, Together.ai, and Anyscale. For Together.ai and Anyscale, we used mistralai/Mixtral-8x7B-Instruct-v0.1, as it represents their best offering. empower-functions consistently deliver superior performance in all scenarios, especially in the multi-turn dataset and the parallel-calling dataset, which are closer to real-world use cases.
-
-![image](assets/eval_result.png)
+![image](assets/bfcl.png)
