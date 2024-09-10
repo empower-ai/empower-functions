@@ -183,7 +183,7 @@ client = OpenAI(
 response = client.chat.completions.create(
     model="empower-functions",
     messages=[{"role": "user",
-               "content": "What's the weather in San Francisco and Los Angles in Celsius?"}],
+               "content": "What's the weather in San Francisco and Los Angeles in Celsius?"}],
     temperature=0,
     tools=[{
         "type": "function",
@@ -268,7 +268,7 @@ Finally, we are committed to continuously optimizing the model for better qualit
 
 ## Evaluation
 
-We evaluate our models against the Berkeley Function Calling benchmark and both of hte 8B and 70B version have achieved the state of the art performance on its size:
+We evaluate our models against the Berkeley Function Calling benchmark and both of the 8B and 70B version have achieved the state of the art performance on its size:
 
 ![image](assets/bfcl.png)
 (captured on Sep 10, 2024)
