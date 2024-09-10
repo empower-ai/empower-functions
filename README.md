@@ -11,9 +11,10 @@ Empower Functions is a family of LLMs(large language models) that offer GPT-4 le
 ## Update
 
 **New Empower Functions v1.1** 
-We have just launched new [v1.1 of the Empower Functions family](https://huggingface.co/collections/empower-dev/empower-functions-v11-66df72d78c1f7b80bda36f5f). The updated v1.1 family has been fine-tuned based on Llama3.1, using an enhanced curated dataset. It has achieved state-of-the-art performance on the Berkeley Function Calling leader board:
+We have just launched new [v1.1 of the Empower Functions family](https://huggingface.co/collections/empower-dev/empower-functions-v11-66df72d78c1f7b80bda36f5f). The updated v1.1 family has been fine-tuned based on Llama3.1 using an enhanced curated dataset. It has achieved state-of-the-art performance on the Berkeley Function Calling leader board:
 
 ![image](assets/bfcl.png)
+(captured on Sep 10, 2024)
 
 ## What is real world "tool using" use cases?
 
@@ -270,3 +271,4 @@ Finally, we are committed to continuously optimizing the model for better qualit
 We evaluate our models against the Berkeley Function Calling benchmark and both of hte 8B and 70B version have achieved the state of the art performance on its size:
 
 ![image](assets/bfcl.png)
+(captured on Sep 10, 2024)
