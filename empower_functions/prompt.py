@@ -56,11 +56,11 @@ def _check_and_merge_messages(messages):
                 raise Exception(
                     '"tool_call_id" must be provided for message with role "tool"')
 
+            content = None
             try:
                 content = json.loads(message['content'])
             except:
-                raise Exception(
-                    'Content of a message with role "tool" must be a valid JSON string')
+                content = {"result": message['content']}
 
             if previous_role == 'tool':
                 updated_messages[-1]['content'].append({

@@ -7,16 +7,12 @@ import llama_cpp
 from llama_cpp.server.model import LlamaProxy
 from llama_cpp.server.app import (
     get_llama_proxy,
-    create_chat_completion as _create_chat_completion,
     router,
     authenticate,
     openai_v1_tag,
     _logit_bias_tokens_to_input_ids,
     get_event_publisher,
     _ping_message_factory
-)
-from llama_cpp.server.types import (
-    ChatCompletionRequestMessage,
 )
 
 import llama_cpp
@@ -35,7 +31,7 @@ import llama_cpp.llama_chat_format as llama_chat_format
 
 def _create_chat_completion_patched(
         llama: llama_cpp.Llama,
-        messages: List[ChatCompletionRequestMessage],
+        messages: List[llama_cpp.ChatCompletionRequestMessage],
         functions: Optional[List[llama_cpp.ChatCompletionFunction]] = None,
         function_call: Optional[llama_cpp.ChatCompletionRequestFunctionCall] = None,
         tools: Optional[List[llama_cpp.ChatCompletionTool]] = None,

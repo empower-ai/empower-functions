@@ -7,7 +7,45 @@ client = openai.OpenAI(
 )
 
 messages = [
-    {"role": "user", "content": "What's the weather in San Francisco?"}
+    {"role": "user", "content": "Hi, can you tell me the current weather in San Francisco and New York City in Fahrenheit?"},
+    {
+        "role": "assistant",
+        "content": None,
+        "tool_calls": [
+            {
+                "id": "get_current_weather_san_francisco",
+                "type": "function",
+                "function": {
+                    "name": "get_current_weather",
+                    "arguments": json.dumps({
+                        "location": "San Francisco, CA",
+                        "unit": "fahrenheit"
+                    })
+                }
+            },
+            {
+                "id": "get_current_weather_new_york",
+                "type": "function",
+                "function": {
+                    "name": "get_current_weather",
+                    "arguments": json.dumps({
+                        "location": "New York City, NY",
+                        "unit": "fahrenheit"
+                    })
+                }
+            }
+        ]},
+    {
+        "role": "tool",
+        "tool_call_id": "get_current_weather_san_francisco",
+        "content": json.dumps({"temperature": 75})
+
+    },
+    {
+        "role": "tool",
+        "tool_call_id": "get_current_weather_new_york",
+        "content":  json.dumps({"temperature": 82})
+    }
 ]
 
 tools = [
@@ -36,20 +74,6 @@ chat_completion = client.chat.completions.create(
     tools=tools,
     temperature=0,
     tool_choice="auto",
-)
-
-print(chat_completion)
-
-# Query again with thinking enabled
-chat_completion = client.chat.completions.create(
-    model="does_not_matter",
-    messages=messages,
-    tools=tools,
-    temperature=0,
-    tool_choice="auto",
-    extra_body={
-        "include_thinking": True
-    }
 )
 
 print(chat_completion)
