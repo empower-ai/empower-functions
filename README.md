@@ -165,6 +165,25 @@ print(json.dumps(result["choices"][0], indent=2))
 ```
 
 </details>
+<details>
+<summary>Running in Windows with Cuda</summary>
+
+* install Nvidia toolkit (I used cuda 12.1): https://developer.nvidia.com/cuda-12-1-1-download-archive?target_os=Windows&target_arch=x86_64&target_version=11&target_type=exe_local
+
+* install Visual Studio with:
+C++ CMake tools for Windows.
+C++ core features
+
+* run this command with the empower_functions virtual environment active in the Windows command prompt (command prompt, not PowerShell):
+`set FORCE_CMAKE=1 && set CMAKE_ARGS=-DGGML_CUDA=on -DLLAMA_AVX=off -DLLAMA_AVX2=off -DLLAMA_FMA=off && pip install llama-cpp-python --no-cache-dir --force-reinstall --verbose`
+
+That will take awhile but will overwrite the normal llama-cpp-python module with the Cuda support one.
+
+* then run the server with the virtual environment active with a command like this:
+`python -m empower_functions.server --model C:\Github\empower-functions-gpu\models\ggml-model-Q4_K_M.gguf --chat_format empower-functions --port 8001 --n_ctx 8196 --n_gpu_layers 20`
+
+replacing the path with the path where the model is saved on your computer and adjusting n_ctx to the desired context and n_gpu_layers to the amount of the layers to offload to the GPU.
+</details>
 
 #### Using Empower API
 
